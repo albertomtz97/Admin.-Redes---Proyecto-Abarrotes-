@@ -1,6 +1,8 @@
 #!/bin/bash
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LOG_FILE="$BASE_DIR/logs/bitacora.log"
+CSV_USUARIOS="$BASE_DIR/Datos_de_Usuarios/usuarios.csv"
+
 
 registrar() {
     echo "$(date '+%F %T') | ${SUDO_USER:-$USER} | $1" >> "$LOG_FILE"

@@ -5,7 +5,7 @@ source "$DIR/lib/comunes.sh"
 source "$DIR/modulos/gestion.sh"
 
 verificar_root
-mkdir -p "$DIR/logs" "$DIR/respaldos"
+mkdir -p "$DIR/logs" "$DIR/respaldos" "$DIR/Datos_de_Usuarios"
 
 while true; do
     clear
