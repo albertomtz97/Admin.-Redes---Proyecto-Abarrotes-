@@ -1,0 +1,9 @@
+# Tareas fijas del sistema de abarrotes.
+# Plantilla: instalar.sh la copia a /etc/cron.d/abarrotes reemplazando
+# @BASE_DIR@ con la ruta del proyecto. No edites /etc/cron.d/abarrotes
+# a mano: se regenera cada vez que corres instalar.sh.
+# Las tareas (pago semanal, respaldo nocturno, limpieza y reporte de
+# disco) se agregan con el módulo Tareas (spec 0005).
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+MAILTO=""
