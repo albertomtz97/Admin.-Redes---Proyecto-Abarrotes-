@@ -73,22 +73,91 @@ eliminar_usuario() {
     else
         echo "El usuario no existe."
     fi
-    pausa
+ 
+   pausa
 }
 
+# Muestra grupos normales (GID >= 1000) en tabla
+listar_grupos_tabla(){
+
+	 printf "%-18s %-8s %s\n" "GRUPO" "GID" "MIEMBROS"
+    printf "%-18s %-8s %s\n" "-----" "---" "--------"
+    getent group | awk -F: '$3 >= 1000 && $3 < 65534 {printf "%-18s %-8s %s\n", $1, $3, $4}'
+}
+
+# Muestra usuarios normales con UID, GID principal y grupos
+listar_usuarios_tabla(){
+
+	printf "%-15s %-8s %-8s %s\n" "USUARIO" "UID" "GID" "GRUPOS"
+    printf "%-15s %-8s %-8s %s\n" "-------" "---" "---" "------"
+    getent passwd | awk -F: '$3 >= 1000 && $3 < 65534 {print $1, $3, $4}' | \
+    while read -r u uid gid; do
+        grupos=$(id -nG "$u" | tr ' ' ',')
+        printf "%-15s %-8s %-8s %s\n" "$u" "$uid" "$gid" "$grupos"
+    done
+
+}
 consultar_grupos() {
-    clear
-    echo "--- GRUPOS DE USUARIOS ---"
-    echo "1) Listar todos los grupos"
-    echo "2) Ver grupos de un usuario"
-    echo "3) Ver miembros de un grupo"
-    read -rp "Opción: " op
-    case $op in
-        1) cut -d: -f1 /etc/group ;;
-        2) read -rp "Usuario: " u; groups "$u" ;;
-        3) read -rp "Grupo: " g; getent group "$g" ;;
-    esac
-    pausa
+    while true; do
+        clear
+        echo "--- CONSULTAR GRUPOS ---"
+        echo "1) Listar todos los grupos"
+        echo "2) Ver grupos de un usuario"
+        echo "3) Ver miembros de un grupo"
+        echo "4) Volver"
+        read -rp "Opción: " op
+        case $op in
+            1)
+                clear
+                echo "--- GRUPOS DE USUARIOS ---"
+                listar_grupos_tabla
+                echo
+                read -rp "¿Ver también los grupos del sistema? (s/n): " r
+                if [ "$r" = "s" ]; then
+                    echo
+                    cut -d: -f1 /etc/group | column -c 80
+                fi
+                pausa
+                ;;
+            2)
+                clear
+                echo "--- USUARIOS ---"
+                listar_usuarios_tabla
+                echo
+                read -rp "¿De qué usuario quieres ver los grupos?: " u
+                if id "$u" &>/dev/null; then
+                    echo
+                    echo "Grupo principal: $(id -gn "$u") (GID $(id -g "$u"))"
+                    echo "Todos sus grupos: $(id -nG "$u")"
+                else
+                    echo "El usuario no existe."
+                fi
+                pausa
+                ;;
+            3)
+                clear
+                echo "--- GRUPOS DE USUARIOS ---"
+                listar_grupos_tabla
+                echo
+                read -rp "¿Qué grupo quieres ver?: " g
+                if getent group "$g" &>/dev/null; then
+                    echo
+                    echo "Miembros de $g:"
+                    miembros=$(getent group "$g" | cut -d: -f4)
+                    if [ -n "$miembros" ]; then
+                        echo "$miembros" | tr ',' '\n' | sed 's/^/  - /'
+                    else
+                        echo "  (sin miembros agregados explícitamente)"
+                    fi
+                else
+                    echo "El grupo no existe."
+                fi
+                pausa
+                ;;
+            4) return ;;
+            *) echo "Inválida"; pausa ;;
+        esac
+    done
 }
 
 ver_usuarios_registrados() {
