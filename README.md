@@ -25,10 +25,12 @@ sudo ./menu.sh       # abre el sistema
 
 ## Equipo
 
+Instrucciones simples por persona: [equipo/LEEME.md](equipo/LEEME.md).
+
 | Módulo | Responsable | Rama |
 |---|---|---|
-| 0002 Base | _por asignar_ | `feature/base` |
-| 0003 Gestión | _por asignar_ | `feature/gestion` |
-| 0004 Respaldo | _por asignar_ | `feature/respaldo` |
-| 0005 Tareas | _por asignar_ | `feature/tareas` |
-| 0006 Seguridad | _por asignar_ | `feature/seguridad` |
+| 0002 Base + integración y pruebas | Erick | `dev` |
+| 0003 Gestión | Beto | `feature/gestion` |
+| 0004 Respaldo | Diego | `feature/respaldo` |
+| 0005 Tareas | Brian | `feature/tareas` |
+| 0006 Seguridad | Gonzalo | `feature/seguridad` |
