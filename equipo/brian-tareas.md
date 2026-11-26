@@ -1,4 +1,4 @@
-# Brian: Tareas (cron, at y pago a distribuidores)
+# Brian: Automatización de tareas (cron, at y pago a distribuidores)
 
 **Archivos:** `modulos/tareas.sh`, `tareas/pago_distribuidores.sh`, `config/abarrotes.cron`
 **Rama:** `brian/tareas` · No dependes del módulo de nadie.
@@ -8,7 +8,7 @@ Requisitos del proyecto: [docs/requisitos.md](../docs/requisitos.md).
 
 ## Qué vas a construir
 
-La opción **Tareas** del menú: hacer que el sistema ejecute cosas solo. Linux tiene dos formas:
+La opción **Automatización de tareas** del menú: hacer que el sistema ejecute cosas solo. Linux tiene dos formas:
 
 | | **cron** | **at** |
 |---|---|---|
@@ -16,7 +16,9 @@ La opción **Tareas** del menú: hacer que el sistema ejecute cosas solo. Linux 
 | Ejemplo | Pagar cada viernes a las 18:00 | Un aviso hoy a las 23:00 |
 
 El profesor pide, **para las dos**: tener tareas **ya programadas** y poder **programar nuevas**
-desde el menú. Su ejemplo es el pago automático a los distribuidores.
+desde el menú. Al programar, el menú debe **preguntar qué tarea y en qué fecha**. Al revisar, el
+profesor pondrá una tarea suya: tu menú debe aceptar un comando cualquiera, no solo tus ejemplos.
+Nuestro ejemplo principal es el pago automático a los distribuidores.
 
 ```
 TAREAS
@@ -89,7 +91,9 @@ Después corre `sudo ./instalar.sh`: copia las tareas y da permiso de ejecución
 Muestra los dos archivos, por ejemplo `ui_archivo "$CRON_FIJAS"` y `ui_archivo "$CRON_USUARIO"`.
 
 ### 4. Programar cron nueva
-Pide el horario (los 5 campos juntos, ej. `30 9 * * 1`) y el comando. Revisa los datos y agrega al
+Pide la tarea (el comando) y la fecha como los 5 campos juntos. Escribe en la pregunta el orden y un
+ejemplo para que se entienda: `minuto hora día mes día-semana` (`30 9 1 12 *` = 1 de diciembre a las
+9:30; cron la repite cada año). Revisa los datos y agrega al
 final de `$CRON_USUARIO` (con `>>`) la línea `<5 campos> root <comando>`. Registra en la bitácora.
 
 ### 5. at ya programadas
@@ -103,8 +107,13 @@ echo "wall 'Hacer corte de caja'" | at 23:00
 (`wall` muestra un mensaje en las terminales abiertas.)
 
 ### 6. Programar at nueva
-Pide comando y hora: `echo "$comando" | at $hora` (sin comillas en `$hora` para que
-`now + 1 hour` funcione). Si `at` falla (hora mal escrita), muestra `ui_error`.
+Pide la tarea (el comando), la **fecha** (`AAAA-MM-DD`) y la hora (`HH:MM`):
+
+```bash
+echo "$comando" | at "$hora" "$fecha"     # ej. at 18:30 2026-12-01
+```
+
+Si `at` falla (fecha u hora mal escrita, o ya pasada), muestra `ui_error`.
 
 ### 7. Ver at
 `ui_comando atq` lista las pendientes (número y fecha). `at -c <número>` enseña qué ejecutará.
@@ -126,5 +135,7 @@ Pide comando y hora: `echo "$comando" | at $hora` (sin comillas en `$hora` para 
    (`sudo nano`) para que no siga corriendo.
 4. Cargas los ejemplos at y aparecen en "ver at".
 5. Un horario incompleto o con letras se rechaza.
+6. Programas una tarea at con fecha y hora a 2 minutos de ahora y comando
+   `date >> /tmp/prueba_at.txt`; después de esa hora el archivo existe.
 
 Guarda capturas de cada opción para el reporte.

@@ -21,8 +21,7 @@ GitHub. Tiempo aproximado: 1 a 1.5 horas.
 
 1. **Selección de software:** elige **"Server with GUI"** (con escritorio; Nagios y Wireshark lo
    necesitan).
-2. **Destino de instalación:** deja la **partición automática** (así `/boot` queda en XFS, que usa el
-   extra de xfsdump).
+2. **Destino de instalación:** deja la **partición automática**.
 3. **Usuario:** crea tu usuario normal y marca **"Hacer administrador a este usuario"** (para poder
    usar `sudo`). No trabajes como root.
 4. Instala y reinicia.

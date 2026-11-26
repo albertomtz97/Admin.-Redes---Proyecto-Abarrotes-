@@ -1,4 +1,4 @@
-# Beto: Gestión (usuarios y grupos)
+# Beto: Gestión (usuarios, grupos y procesos)
 
 **Archivo:** `modulos/gestion.sh` · **Rama:** `beto/gestion`
 
@@ -8,7 +8,7 @@ Requisitos del proyecto: [docs/requisitos.md](../docs/requisitos.md).
 ## Qué vas a construir
 
 La opción **Gestión** del menú. Con ella se administran las cuentas de Linux de las personas de la
-tienda y sus grupos. Un **usuario** es una cuenta del sistema; un **grupo** es un conjunto de usuarios
+tienda y sus grupos, y se ven los procesos. Un **usuario** es una cuenta del sistema; un **grupo** es un conjunto de usuarios
 (sirve para dar permisos a todos de una vez).
 
 Cada usuario tiene un rol, y cada rol es un grupo:
@@ -27,7 +27,8 @@ Así se ve tu menú (puedes usar submenús o una sola lista):
 ```
 GESTIÓN
 ├── Usuarios: agregar · borrar · consultar
-└── Grupos:   agregar · borrar · consultar
+├── Grupos:   agregar · borrar · consultar
+└── Procesos: por usuario activo · del sistema
 ```
 
 Ya existe un `modulos/gestion.sh` con una versión anterior. **Reemplázalo completo**, partiendo de
@@ -83,6 +84,24 @@ quítalo del CSV y `registrar`.
 Muestra cada grupo de `$CSV_GRUPOS` con sus miembros. `getent group <grupo>` imprime
 `nombre:x:número:miembro1,miembro2`.
 
+### 7. Mostrar procesos
+Un **proceso** es un programa que se está ejecutando. Son dos opciones (solo consultan, no cambian
+nada):
+
+- **Por usuario activo:** primero muestra quién tiene sesión abierta (`who`), pide el nombre con
+  `ui_pedir`, revisa que exista (`id "$usuario"`) y muestra sus procesos:
+  `ps -u "$usuario" -o user,pid,%cpu,%mem,etime,cmd`.
+- **Del sistema:** todos los procesos con `ps -ef`.
+
+La lista es larga; para poder desplazarte, guárdala en un temporal y muéstrala (`q` para salir):
+
+```bash
+temporal=$(mktemp)
+ps -ef > "$temporal"
+ui_archivo "$temporal"
+rm -f "$temporal"
+```
+
 ## No olvides (evita dañar tu sistema)
 
 - Solo borra usuarios y grupos que estén en tus CSV. Nunca `root` ni `$SUDO_USER` (tu cuenta).
@@ -97,5 +116,7 @@ Muestra cada grupo de `$CSV_GRUPOS` con sus miembros. `getent group <grupo>` imp
 3. Borras un usuario: `id <usuario>` ya no lo encuentra y no está en el CSV.
 4. Intentar borrar `root` muestra un error y no pasa nada.
 5. `sudo ./instalar.sh` corre **dos veces** sin errores y existen los 3 grupos de rol.
+6. "Procesos por usuario activo" muestra los de tu usuario, y un nombre que no existe da error.
+7. "Procesos del sistema" muestra la lista completa y puedes volver al menú.
 
 Guarda capturas de cada opción para el reporte.

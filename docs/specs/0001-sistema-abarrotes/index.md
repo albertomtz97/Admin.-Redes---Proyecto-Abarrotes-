@@ -3,6 +3,8 @@
 > **Documento de consulta.** Es el diseño detallado e incluye funciones que **no son obligatorias**.
 > Lo que hay que entregar está en [requisitos](../../requisitos.md) y en tu instrucción de
 > [equipo/](../../../equipo/GUIA.md); si algo no coincide, mandan esos.
+>
+> **Cambio por el enunciado oficial (2026-11-25), manda sobre el texto de abajo:** Cambian Gestión (+ procesos), Respaldo (carpeta y destino libres; rsync obligatorio; **sin xfsdump**), Tareas (preguntar fecha) y Seguridad (submenú Monitoreo con 3 herramientas obligatorias).
 
 **Date**: 2026-11-25
 **Status**: Accepted

@@ -23,12 +23,14 @@ Erick: menú, instalador y unión de las partes.
 
 ## Requisitos
 
-| Módulo | Obligatorio | Extra (solo si sobra tiempo) |
-|---|---|---|
-| Gestión | Usuarios y grupos: agregar, borrar, consultar | |
-| Tareas | cron y at: tareas ya programadas y programar nuevas desde el menú. Pago a distribuidores como tarea fija | |
-| Respaldo | tar + gzip, tar + bzip2 | rsync, xfsdump/xfsrestore de `/boot` |
-| Seguridad | Submenú, Nagios (abre navegador), Wireshark (abre ventana) | nmap con 5 opciones |
+| Módulo | Obligatorio |
+|---|---|
+| Actividades de gestión | Usuarios y grupos: alta, baja, consulta. Procesos: por usuario activo y del sistema |
+| Automatización de tareas | cron y at: ejemplos y programar nuevas preguntando tarea y fecha |
+| Respaldo | tar + gzip, tar + bzip2, rsync; preguntar carpeta y destino |
+| Seguridad | Monitoreo: Nagios, Wireshark y nmap |
+
+Enunciado oficial y decisiones: [docs/requisitos.md](docs/requisitos.md).
 
 ## Uso
 

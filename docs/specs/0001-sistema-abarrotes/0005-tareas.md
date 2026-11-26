@@ -3,6 +3,8 @@
 > **Documento de consulta.** Es el diseño detallado e incluye funciones que **no son obligatorias**.
 > Lo que hay que entregar está en [requisitos](../../requisitos.md) y en tu instrucción de
 > [equipo/](../../../equipo/GUIA.md); si algo no coincide, mandan esos.
+>
+> **Cambio por el enunciado oficial (2026-11-25), manda sobre el texto de abajo:** La opción se llama **Automatización de tareas**. Al programar se pregunta la tarea y la **fecha**; en at, fecha `AAAA-MM-DD` y hora `HH:MM`. Debe aceptar un comando cualquiera (el profesor pondrá uno).
 
 ## Summary
 

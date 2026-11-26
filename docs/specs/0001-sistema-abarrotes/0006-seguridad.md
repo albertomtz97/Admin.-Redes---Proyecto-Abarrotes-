@@ -3,6 +3,8 @@
 > **Documento de consulta.** Es el diseño detallado e incluye funciones que **no son obligatorias**.
 > Lo que hay que entregar está en [requisitos](../../requisitos.md) y en tu instrucción de
 > [equipo/](../../../equipo/GUIA.md); si algo no coincide, mandan esos.
+>
+> **Cambio por el enunciado oficial (2026-11-25), manda sobre el texto de abajo:** Seguridad tiene un submenú **Monitoreo** con 3 herramientas **obligatorias**: Nagios, Wireshark (capturando) y nmap, con resultado en tiempo real.
 
 ## Summary
 

@@ -24,10 +24,10 @@ Es un menú de terminal escrito en Bash, con 4 opciones. Cada quien programa una
 
 | Opción del menú | Qué hace | Quién |
 |---|---|---|
-| Gestión | Usuarios y grupos: agregar, borrar, consultar | Beto |
-| Tareas | Tareas automáticas con cron y at (ej. pago a distribuidores) | Brian |
-| Respaldo | Copias comprimidas con tar, gzip y bzip2 | Diego |
-| Seguridad | Abrir Nagios y Wireshark (nmap es extra) | Gonzalo |
+| Actividades de gestión | Usuarios y grupos (alta, baja, consulta) y mostrar procesos | Beto |
+| Automatización de tareas | cron y at: ejemplos y tareas nuevas con fecha | Brian |
+| Respaldo | tar + gzip, tar + bzip2 y rsync, preguntando carpeta y destino | Diego |
+| Seguridad → Monitoreo | Nagios, Wireshark y nmap | Gonzalo |
 
 El menú, el instalador y las funciones comunes **ya están hechos**:
 
@@ -114,7 +114,7 @@ Abre la herramienta dentro de la carpeta del proyecto. **Primero pide que te lo 
 
 Cuando lo entiendas:
 
-> Programemos solo lo obligatorio, una opción a la vez. Hazlo sencillo, es un proyecto escolar.
+> Programemos solo lo que piden docs/requisitos.md y mi instrucción, una opción a la vez. Hazlo sencillo, es un proyecto escolar.
 > Toca solo mis archivos. Después de cada opción dime cómo probarla en mi VM.
 
 Si tu herramienta no puede leer el proyecto (un chat en el navegador), copia y pega el contenido de
