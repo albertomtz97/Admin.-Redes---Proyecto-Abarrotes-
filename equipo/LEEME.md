@@ -1,8 +1,8 @@
 # Instrucciones para el equipo
 
 Hola. Aquí está lo que cada quien tiene que hacer, explicado simple.
-**No necesitas saber git.** Tú programas tu parte, la pruebas en tu máquina virtual y se la mandas a Erick
-en un `.zip`. Erick la junta con lo de los demás.
+**Hay dos formas de entregar tu parte:** con un `.zip` (no necesitas saber git) o con git (recomendada
+si sabes usarlo). Tú programas tu parte, la pruebas en tu máquina virtual y Erick la junta con lo de los demás.
 
 ## ¿Quién hace qué?
 
@@ -14,7 +14,7 @@ en un `.zip`. Erick la junta con lo de los demás.
 | Gonzalo | Seguridad (Nagios, Wireshark, nmap) | [gonzalo-seguridad.md](gonzalo-seguridad.md) |
 | Erick | Integración, pruebas y reporte | [erick-integracion.md](erick-integracion.md) |
 
-## Cómo funciona (5 pasos)
+## Entregar con .zip (5 pasos)
 
 1. **Prepara tu máquina virtual** con AlmaLinux siguiendo `docs/guia-maquina-virtual.md`
    (secciones 1, 2 y 5; puedes saltarte lo de GitHub).
@@ -35,6 +35,62 @@ en un `.zip`. Erick la junta con lo de los demás.
 5. **Mándale a Erick un `.zip`** solo con **tus** archivos (la lista exacta está en tu instrucción),
    con este nombre: `<modulo>_<tu-nombre>_<fecha>.zip`, por ejemplo `respaldo_diego_2026-11-30.zip`.
 
+## Entregar con git
+
+Si sabes usar git, esta es la forma recomendada. Erick ya creó en GitHub las
+ramas de Diego, Brian y Gonzalo; Beto crea la suya:
+
+| Persona | Rama |
+|---|---|
+| Beto | `beto/gestion` |
+| Diego | `diego/respaldo` |
+| Brian | `brian/tareas` |
+| Gonzalo | `gonzalo/seguridad` |
+| Erick | `erick/base` (lib/comunes.sh, menu.sh, instalar.sh y documentación) |
+
+**Beto:** si ya trabajaste en `dev` sin subir nada, haz commit de todo y luego:
+```bash
+git switch -c beto/gestion
+git push -u origin beto/gestion
+git switch dev
+git reset --hard origin/dev              # tu dev vuelve a ser igual al de GitHub
+```
+Ojo: `reset --hard` borra lo que no tenga commit; por eso primero el commit y la rama.
+
+**Primera vez** (en la VM; después corre `sudo ./instalar.sh` como en el paso 2 del .zip):
+```bash
+git clone https://github.com/albertomtz97/Admin.-Redes---Proyecto-Abarrotes-.git proyecto
+cd proyecto
+git switch <tu-nombre>/<tu-modulo>
+```
+
+**Cada día:**
+```bash
+git switch dev && git pull               # baja lo último que Erick unió a dev
+git switch <tu-nombre>/<tu-modulo>
+git merge dev                            # trae esos cambios a tu rama
+# ...programa tu módulo...
+bash -n modulos/<tu-modulo>.sh           # revisa que no haya errores de escritura
+sudo ./pruebas/correr_todas.sh           # todas las pruebas
+git add <solo tus archivos>              # nunca "git add ."
+git commit -m "<modulo>: <qué hiciste>"  # por ejemplo: respaldo: agrega respaldo con tar
+git push
+```
+
+**Entregar:** abre un pull request de `<tu-nombre>/<tu-modulo>` hacia `dev` (en GitHub o con
+`gh pr create --base dev`). Erick lo revisa y lo une a `dev`. Nadie une directo a `main`:
+`main` solo recibe `dev` cuando todo pasa las pruebas.
+
+**Reglas extra de git:**
+- Nadie trabaja ni hace commit directo en `dev` ni en `main`, ni Erick: todo entra por pull
+  request desde la rama de cada quien hacia `dev`.
+- No toques `lib/comunes.sh`, `menu.sh` ni `instalar.sh` (pídeselo a Erick).
+- No subas `datos/`, `logs/` ni `respaldos/`.
+- Si creas un `.sh` nuevo desde Windows: `git update-index --chmod=+x <archivo>`.
+
+El repo también trae dos agentes de Claude Code en `.claude/agents/`: Explore (Haiku, solo lee) e
+Implementer (Sonnet, escribe).
+
 ## Reglas de oro (si no se cumplen, se rompe algo)
 
 1. **Solo cambias tus archivos.** Nunca edites `lib/comunes.sh`, `menu.sh` ni `instalar.sh`.
@@ -48,7 +104,7 @@ en un `.zip`. Erick la junta con lo de los demás.
 5. **Nada de `echo`, `read` o `clear` para pantallas.** Usa las funciones `ui_*` (abajo). Así después
    se le puede poner interfaz gráfica sin tocar tu código.
 6. **Si algo falla, no digas que funcionó**: no escribas en el CSV ni en la bitácora cuando un comando falla.
-7. **Manda siempre el `.zip` completo de tus archivos**, no pedazos de código por chat.
+7. **Entrega siempre tus archivos completos** (el `.zip` o el pull request), no pedazos de código por chat.
 
 ## Funciones que ya existen y puedes usar
 
