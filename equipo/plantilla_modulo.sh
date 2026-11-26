@@ -69,20 +69,3 @@ ejemplo_agregar_nota() {
     csv_agregar "$DATOS_DIR/notas.csv" "$(date '+%F %T')" "$texto" || return 1
     registrar ejemplo "Nota agregada"
 }
-
-# ==========================================================
-# PLANTILLA DE PRUEBAS: crea pruebas/probar_<tu-modulo>.sh así
-# (sin el "#" del inicio de cada línea):
-#
-# #!/bin/bash
-# set -Eeuo pipefail
-# source "$(dirname "$0")/lib_pruebas.sh"      # usa una carpeta temporal, no tus datos reales
-# source "$BASE_DIR/modulos/ejemplo.sh"
-#
-# printf '== Ejemplo ==\n'
-# verificar     "guarda una nota normal"      ejemplo_agregar_nota "comprar leche"
-# esperar_falla "rechaza nota con coma"       ejemplo_agregar_nota "leche, pan"
-# verificar     "la nota quedó en el CSV"     grep -q "comprar leche" "$DATOS_DIR/notas.csv"
-#
-# resumen
-# ==========================================================

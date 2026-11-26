@@ -5,7 +5,6 @@
 # validaciones, manejo de CSV y apertura de programas gráficos.
 # La cargan con `source` menu.sh, instalar.sh, tareas/ y pruebas/.
 # Solo define variables y funciones; no ejecuta nada al cargarse.
-# Spec: docs/specs/0001-sistema-abarrotes/0002-base.md
 # ==========================================================
 
 # ----------------------------------------------------------
@@ -20,7 +19,7 @@
 : "${CRON_FIJAS:=/etc/cron.d/abarrotes}"
 : "${CRON_USUARIO:=/etc/cron.d/abarrotes_usuario}"
 
-# Archivos de datos y su encabezado (formato fijo, ver spec 0001)
+# Archivos de datos y su encabezado (formato fijo)
 CSV_USUARIOS="$DATOS_DIR/usuarios.csv"
 CSV_GRUPOS="$DATOS_DIR/grupos.csv"
 CSV_PAGOS="$DATOS_DIR/pagos.csv"

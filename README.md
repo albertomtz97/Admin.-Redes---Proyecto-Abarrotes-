@@ -1,36 +1,33 @@
 # Sistema de Administración — Tienda de Abarrotes
 
-Proyecto final de **Administración de Redes**. Menú en Bash para AlmaLinux que administra
-usuarios y grupos, tareas programadas (cron y at), respaldos y herramientas de seguridad.
+Proyecto de **Administración de Redes**: menú en Bash para AlmaLinux 9. **Tenemos 1 semana.**
 
-## Uso rápido
+## Qué lee cada quien
+
+1. [equipo/GUIA.md](equipo/GUIA.md) (todos).
+2. Tu archivo:
+
+| Persona | Módulo | Instrucción | Rama |
+|---|---|---|---|
+| Beto | Gestión | [beto-gestion.md](equipo/beto-gestion.md) | `beto/gestion` |
+| Diego | Respaldo | [diego-respaldo.md](equipo/diego-respaldo.md) | `diego/respaldo` |
+| Brian | Tareas | [brian-tareas.md](equipo/brian-tareas.md) | `brian/tareas` |
+| Gonzalo | Seguridad | [gonzalo-seguridad.md](equipo/gonzalo-seguridad.md) | `gonzalo/seguridad` |
+
+Erick: menú, instalador y unión de las partes.
+
+## Requisitos
+
+| Módulo | Obligatorio | Extra (solo si sobra tiempo) |
+|---|---|---|
+| Gestión | Usuarios y grupos: agregar, borrar, consultar | |
+| Tareas | cron y at: tareas ya programadas y programar nuevas desde el menú. Pago a distribuidores como tarea fija | |
+| Respaldo | tar + gzip, tar + bzip2 | rsync, xfsdump/xfsrestore de `/boot` |
+| Seguridad | Submenú, Nagios (abre navegador), Wireshark (abre ventana) | nmap con 5 opciones |
+
+## Uso
 
 ```bash
-sudo ./instalar.sh   # instala dependencias y servicios; puedes correrlo las veces que haga falta (no borra datos)
-sudo ./menu.sh       # abre el sistema
+sudo ./instalar.sh   # una vez
+sudo ./menu.sh
 ```
-
-## Documentación
-
-| Documento | Para qué |
-|---|---|
-| [docs/guia-maquina-virtual.md](docs/guia-maquina-virtual.md) | **Empieza aquí**: preparar tu VM de AlmaLinux, GitHub, Claude Code y flujo diario |
-| [docs/requisitos.md](docs/requisitos.md) | Lo que pidió el profesor, obligatorio y opcional |
-| [docs/specs/0001-sistema-abarrotes/index.md](docs/specs/0001-sistema-abarrotes/index.md) | Arquitectura, estructura, contrato entre módulos, comentarios, formato de datos |
-| [0002-base.md](docs/specs/0001-sistema-abarrotes/0002-base.md) | Menú, `lib/comunes.sh`, instalador, pruebas |
-| [0003-gestion.md](docs/specs/0001-sistema-abarrotes/0003-gestion.md) | Usuarios y grupos |
-| [0004-respaldo.md](docs/specs/0001-sistema-abarrotes/0004-respaldo.md) | tar gzip/bzip2, rsync, xfsdump |
-| [0005-tareas.md](docs/specs/0001-sistema-abarrotes/0005-tareas.md) | cron, at, pagos a distribuidores |
-| [0006-seguridad.md](docs/specs/0001-sistema-abarrotes/0006-seguridad.md) | Nagios, Wireshark, nmap |
-
-## Equipo
-
-Instrucciones simples por persona: [equipo/LEEME.md](equipo/LEEME.md).
-
-| Módulo | Responsable | Rama |
-|---|---|---|
-| 0002 Base + integración y pruebas | Erick | `erick/base` |
-| 0003 Gestión | Beto | `beto/gestion` |
-| 0004 Respaldo | Diego | `diego/respaldo` |
-| 0005 Tareas | Brian | `brian/tareas` |
-| 0006 Seguridad | Gonzalo | `gonzalo/seguridad` |
