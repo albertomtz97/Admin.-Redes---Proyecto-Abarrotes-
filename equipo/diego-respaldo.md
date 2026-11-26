@@ -40,11 +40,11 @@ RESPALDO
       (`-cjf` para bzip2). Si el nombre ya existe, agrega `_2`, `_3`.
 - [ ] Usa `umask 077` al crear (el respaldo de `/etc` incluye contraseñas cifradas; solo root debe leerlo).
 - [ ] Código de salida de `tar`: 0 = bien, 1 = bien con aviso, 2 o más = falla (borra el archivo a medias).
-- [ ] Si salió bien: fila en `$CSV_RESPALDOS` → `fecha,archivo,origen,formato,tamano,activo`
+- [ ] Si salió bien: fila en `$CSV_RESPALDOS` → `fecha,archivo,origen,formato,tamano,estado` (con `estado` = `activo`)
       (`archivo` = solo el nombre, `origen` = ruta completa, `tamano` = `du -h <archivo> | cut -f1`)
       y `registrar respaldo "..."`.
 - [ ] **Historial**: `ui_tabla_csv "$CSV_RESPALDOS"`.
-- [ ] **Ver contenido**: `tar -tf` de un respaldo elegido (solo `gz` y `bz2` activos).
+- [ ] **Ver contenido**: `tar -tf` de un respaldo elegido (solo `gz` y `bz2` con `estado` = `activo`).
 - [ ] **Restaurar**: por defecto en `/tmp/restauracion_<fecha>`. En la ruta original solo con **dos**
       confirmaciones. Si es la carpeta de datos, excluye `respaldos.csv` (`--exclude`).
 - [ ] **`respaldo_eliminar <archivo>`** (sin pantallas): acepta nombre o ruta (usa `basename`), borra el
@@ -60,7 +60,7 @@ RESPALDO
 
 ## Cuidado con
 
-- Nunca dejes un archivo de respaldo sin fila en el CSV, ni una fila `activo` sin archivo.
+- Nunca dejes un archivo de respaldo sin fila en el CSV, ni una fila con `estado` = `activo` sin archivo.
 - `respaldo_crear` no puede usar `ui_*` (Brian la llama desde cron, donde no hay pantalla).
 
 ## Cómo probarlo a mano

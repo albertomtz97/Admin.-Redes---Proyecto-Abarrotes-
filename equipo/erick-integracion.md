@@ -2,9 +2,10 @@
 
 ## Tu papel
 
-Eres el único que usa git. Recibes los `.zip` de cada compañero, los revisas, los unes a `dev` y les
-mandas de vuelta el proyecto actualizado. También corres las pruebas completas, mantienes `lib/comunes.sh`,
-`menu.sh` e `instalar.sh`, y armas el reporte.
+Cada compañero entrega por pull request desde su rama `<nombre>/<módulo>` hacia `dev` (flujo principal),
+o por `.zip` (alternativa). Tú los revisas, los unes a `dev` y les avisas para que traigan lo nuevo.
+También corres las pruebas completas, mantienes `lib/comunes.sh`, `menu.sh` e `instalar.sh`, y armas el
+reporte.
 
 ## 1. Mandar el proyecto a tus compañeros
 
@@ -18,13 +19,27 @@ git archive --format=zip -o ~/abarrotes_dev_$(date +%F).zip dev
 Mándales ese `.zip` (WhatsApp, Drive, correo). Lleva solo lo que está en git: sin datos ni logs.
 Diles que lo descompriman en `~/proyecto` dentro de su VM.
 
-## 2. Recibir el `.zip` de un compañero
+## Revisar y unir un pull request
+
+Flujo principal. El compañero abre un pull request de su rama hacia `dev`:
+
+```bash
+gh pr checkout <n>                              # baja la rama del pull request
+bash -n modulos/<modulo>.sh
+shellcheck -S warning modulos/<modulo>.sh
+sudo ./pruebas/correr_todas.sh                  # que TODO siga pasando
+sudo ./menu.sh                                  # prueba manual de su módulo
+gh pr merge <n> --merge                         # o únelo desde GitHub
+git switch dev && git pull                      # trae a tu carpeta lo ya unido
+```
+
+## 2. Recibir el `.zip` de un compañero (alternativa)
 
 Revisa que traiga **solo** los archivos de su lista (ver su instrucción en esta carpeta). Luego:
 
 ```bash
 git switch dev && git pull
-git switch -c feature/<modulo>            # la primera vez; después: git switch feature/<modulo>
+git switch -c <nombre>/<módulo>           # la primera vez; después: git switch <nombre>/<módulo>
 unzip -o ~/Descargas/<modulo>_<nombre>_<fecha>.zip -d /tmp/entrega
 cp -r /tmp/entrega/<sus archivos> .        # solo sus archivos, a su lugar
 
@@ -59,7 +74,7 @@ git update-index --chmod=+x pruebas/probar_<modulo>.sh
 git update-index --chmod=+x tareas/*.sh
 git commit --author="Diego Apellido <correo-de-diego>" -m "feat(respaldo): crear respaldos gzip/bzip2, restaurar, rsync y xfsdump"
 git switch dev
-git merge --no-ff feature/<modulo> -m "merge: módulo <modulo>"
+git merge --no-ff <nombre>/<módulo> -m "merge: módulo <modulo>"
 sudo ./pruebas/correr_todas.sh
 git push origin dev
 ```
@@ -80,3 +95,7 @@ Luego manda el proyecto actualizado a todos (paso 1).
 - `dev` → `main` y ensayo de la demostración (sección 10 de `docs/guia-maquina-virtual.md`).
 - Reporte: pide a cada quien su sección (texto + capturas) en un documento aparte y tú lo juntas en
   `reporte/Proyecto final.docx`.
+
+Para pasar `dev` a `main` de forma segura: hazlo con un pull request en GitHub
+(`gh pr create --base main --head dev`) y, ya unido, etiqueta la versión (ej. `git tag v0.2-gestion`).
+Evita `git switch main` en la carpeta de trabajo, porque `logs/` y `datos/` son de root.

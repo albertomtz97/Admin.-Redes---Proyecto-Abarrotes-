@@ -30,7 +30,7 @@ llama a `respaldo_crear`. La interfaz gráfica (fase 2) queda fuera de este spec
 
 **Regla para no dejar código roto**: un módulo está terminado solo cuando (1) `bash -n` no marca
 errores, (2) `pruebas/probar_<modulo>.sh` pasa, (3) la lista manual de su spec se revisó en
-AlmaLinux, (4) cada función tiene su bloque de comentario. Solo entonces se hace commit en `dev`
+AlmaLinux, (4) cada función tiene su bloque de comentario. Solo entonces se une a `dev` por pull request
 y se empieza el siguiente.
 
 ## Decision
@@ -63,7 +63,7 @@ Razonamiento y opciones: ver [rationale.md](rationale.md).
 | Paquetes | `dnf` + repositorio EPEL | Forma estándar de instalar en AlmaLinux. |
 | Instalación | `instalar.sh` que se puede correr varias veces | Deja una máquina limpia lista con un comando. |
 | Pruebas | `pruebas/probar_<modulo>.sh` + lista manual por módulo + `bash -n` (y `shellcheck` si está) | Evita romper lo que ya funcionaba. |
-| Control de versiones | git: `main` (entregas), `dev` (integración), `feature/<modulo>` | Permite repartir módulos después. |
+| Control de versiones | git: `main` (entregas), `dev` (integración), `<nombre>/<módulo>` (pull request hacia `dev`) | Permite repartir módulos después. |
 
 ## Contrato entre módulos
 
@@ -154,6 +154,10 @@ gestion_agregar_usuario() {
 | `datos/respaldos.csv` | `fecha,archivo,origen,formato,tamano,estado` | Respaldo (Tareas solo vía sus funciones) | Respaldo |
 | `datos/nmap/*.txt` | salida de nmap `-oN` | Seguridad | Seguridad |
 | `logs/bitacora.log` | `fecha \| usuario \| modulo \| mensaje` | todos vía `registrar` | Base (visor) |
+| `logs/gui.log` | texto libre (salida de los programas gráficos que abre `abrir_como_usuario`) | Base | revisión manual |
+| `logs/cron.log` | texto libre (salida de las tareas cron, `>> logs/cron.log 2>&1`) | Tareas | revisión manual |
+| `logs/disco.log` | texto libre (`df -h` con fecha, de `reporte_disco.sh`) | Tareas | revisión manual |
+| `datos/migracion_rechazados.csv` | `usuario,rol,telefono,empresa,correo` (formato viejo, filas tal cual) | Base (`instalar.sh`) | revisión manual |
 
 Valores: `rol` ∈ {comprador, proveedor, empleado}; `empresa` y `monto` son `N/A` si el rol no es
 proveedor; `tipo` ∈ {semanal, unico}; `formato` ∈ {gz, bz2, xfsdump}; `estado` ∈ {activo, eliminado}.

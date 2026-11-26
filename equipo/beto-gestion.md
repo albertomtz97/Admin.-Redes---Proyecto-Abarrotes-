@@ -39,8 +39,8 @@ GESTIÓN
 - [ ] **Si algo falla después de `useradd`**, borra el usuario (`userdel -r`) y no escribas en el CSV.
 - [ ] El CSV siempre tiene 6 columnas: `usuario,rol,telefono,correo,empresa,monto`
       (`N/A` en empresa y monto si no es proveedor).
-- [ ] **Eliminar usuario**: solo usuarios que estén en el CSV, nunca `root` ni `$SUDO_USER`
-      (tu propia cuenta), pide confirmación. Si `userdel -r` falla, muestra el error y no toques el CSV.
+- [ ] **Eliminar usuario**: solo usuarios que estén en el CSV, nunca `root`, `$SUDO_USER`
+      (tu propia cuenta) ni un UID menor a 1000, pide confirmación. Si `userdel -r` falla, muestra el error y no toques el CSV.
 - [ ] **Modificar datos**: cambia teléfono y correo (y empresa y monto si es proveedor) con
       `csv_actualizar`. El rol no se cambia.
 - [ ] **Consultar usuarios**: `ui_tabla_csv "$CSV_USUARIOS"`. **Ver detalle**: la fila del CSV,
