@@ -4,8 +4,13 @@ Proyecto de **Administración de Redes**: menú en Bash para AlmaLinux 9. **Tene
 
 ## Qué lee cada quien
 
-1. [equipo/GUIA.md](equipo/GUIA.md) (todos).
-2. Tu archivo:
+1. [docs/requisitos.md](docs/requisitos.md): qué pide el proyecto (todos).
+2. [docs/guia-maquina-virtual.md](docs/guia-maquina-virtual.md): preparar tu VM (todos).
+3. [equipo/GUIA.md](equipo/GUIA.md): cómo trabajar y dónde encontrar cada cosa (todos).
+4. Tu archivo (tabla de abajo).
+
+Diseño detallado, solo de consulta: [docs/specs/](docs/specs/0001-sistema-abarrotes/index.md).
+
 
 | Persona | Módulo | Instrucción | Rama |
 |---|---|---|---|

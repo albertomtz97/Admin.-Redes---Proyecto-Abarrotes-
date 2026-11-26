@@ -2,24 +2,57 @@
 
 Tu trabajo: **programar tu módulo, que funcione y subirlo a tu rama.** Erick une todo.
 
+## Dónde encontrar cada cosa
+
+| Quiero saber... | Abre |
+|---|---|
+| Qué pide el profesor y qué es obligatorio | [docs/requisitos.md](../docs/requisitos.md) |
+| Cómo crear la VM, qué descargar e instalar | [docs/guia-maquina-virtual.md](../docs/guia-maquina-virtual.md) |
+| Qué tengo que programar, paso a paso | Tu instrucción: [Beto](beto-gestion.md) · [Brian](brian-tareas.md) · [Diego](diego-respaldo.md) · [Gonzalo](gonzalo-seguridad.md) |
+| Con qué archivo empiezo | [plantilla_modulo.sh](plantilla_modulo.sh) (ejemplo de módulo comentado) |
+| Qué funciones ya existen | "Funciones que ya existen" (abajo); su explicación completa está en los comentarios de [lib/comunes.sh](../lib/comunes.sh) |
+| Cómo probar y subir mi trabajo | "Probar y subir" (abajo) |
+| Diseño detallado (solo consulta, trae más de lo obligatorio) | [docs/specs/](../docs/specs/0001-sistema-abarrotes/index.md) |
+| Algo falla | "Problemas comunes" (abajo y en la guía de la VM) |
+
+**Orden sugerido:** requisitos → guía de la VM → esta guía → tu instrucción.
+
+## El proyecto en un minuto
+
+Materia **Administración de Redes**: un sistema para una **tienda de abarrotes** en **AlmaLinux**.
+Es un menú de terminal escrito en Bash, con 4 opciones. Cada quien programa una:
+
+| Opción del menú | Qué hace | Quién |
+|---|---|---|
+| Gestión | Usuarios y grupos: agregar, borrar, consultar | Beto |
+| Tareas | Tareas automáticas con cron y at (ej. pago a distribuidores) | Brian |
+| Respaldo | Copias comprimidas con tar, gzip y bzip2 | Diego |
+| Seguridad | Abrir Nagios y Wireshark (nmap es extra) | Gonzalo |
+
+El menú, el instalador y las funciones comunes **ya están hechos**:
+
+```
+menu.sh            menú principal; carga tu módulo si existe
+instalar.sh        instala paquetes y prepara carpetas y datos
+lib/comunes.sh     funciones compartidas (pantallas, CSV, bitácora)
+modulos/           aquí va tu archivo
+datos/             CSV con la información (se crea al instalar; no se sube a git)
+logs/bitacora.log  historial de lo que se hizo
+```
+
+Cuando en el menú eliges tu opción, se llama tu función `menu_<modulo>`. Mientras tu archivo no
+exista, el menú dice "Módulo no disponible todavía".
+
 ## 1. Preparar (una vez)
 
-1. Instala AlmaLinux 9 en una máquina virtual: 4 GB de RAM, 2 CPU, 30 GB. Elige
-   **Server with GUI**, partición automática y crea tu usuario como **administrador**.
-2. En la terminal:
+Sigue [docs/guia-maquina-virtual.md](../docs/guia-maquina-virtual.md): crear la VM, conectar GitHub,
+descargar el proyecto en tu rama y correr `sudo ./instalar.sh`.
+
+Para traer cambios nuevos del equipo a tu rama:
 
 ```bash
-sudo dnf install -y git 'dnf-command(config-manager)'
-sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
-sudo dnf install -y gh
-gh auth login          # GitHub.com, HTTPS, con navegador
-git config --global user.name  "Tu Nombre"
-git config --global user.email "tu-correo-de-github"
-git clone https://github.com/albertomtz97/Admin.-Redes---Proyecto-Abarrotes-.git proyecto
-cd proyecto
-git switch <tu-rama>   # Beto, la primera vez: git switch -c beto/gestion origin/dev
-git merge origin/dev   # trae las instrucciones actuales
-sudo ./instalar.sh
+git fetch
+git merge origin/dev
 ```
 
 ## 2. Programar
@@ -50,6 +83,13 @@ Cuando termines, avísale a Erick. Guarda capturas de cada opción funcionando p
 
 ## Funciones que ya existen
 
+Ya están en `lib/comunes.sh`: úsalas, no las copies ni las edites. Las que piden datos "regresan
+error" si se cancela (escribiendo `q`, o `0` en un menú); por eso llevan `|| return 0`, que significa
+"si canceló, regresa".
+
+Variables listas: `$DATOS_DIR`, `$RESPALDOS_DIR`, `$BASE_DIR` (carpeta del proyecto), `$CSV_USUARIOS`,
+`$CSV_GRUPOS`, `$CSV_PAGOS`, `$CRON_FIJAS`, `$CRON_USUARIO`.
+
 | Función | Ejemplo |
 |---|---|
 | Menú | `op=$(ui_menu "TÍTULO" crear "Crear" ver "Ver") \|\| return 0` |
@@ -66,10 +106,19 @@ No cambies las columnas de los CSV: otros módulos las usan.
 
 ## Si usas IA
 
-Pégale esto:
+Abre la herramienta dentro de la carpeta del proyecto. **Primero pide que te lo explique**:
 
-> Soy <nombre>, mi módulo es <módulo>. Lee equipo/GUIA.md y mi instrucción en equipo/. Hazlo
-> sencillo, es un proyecto escolar. Primero lo obligatorio. Toca solo mis archivos.
+> Soy <nombre>, mi módulo es <módulo>. Lee docs/requisitos.md, equipo/GUIA.md, mi instrucción en equipo/,
+> equipo/plantilla_modulo.sh y lib/comunes.sh. Todavía no programes. Explícame en palabras simples
+> qué tengo que hacer, qué significa cada comando y en qué orden conviene avanzar.
+
+Cuando lo entiendas:
+
+> Programemos solo lo obligatorio, una opción a la vez. Hazlo sencillo, es un proyecto escolar.
+> Toca solo mis archivos. Después de cada opción dime cómo probarla en mi VM.
+
+Si tu herramienta no puede leer el proyecto (un chat en el navegador), copia y pega el contenido de
+esos 5 archivos. Debes poder explicar tu código: si algo no lo entiendes, pregúntalo.
 
 ## Problemas comunes
 
