@@ -8,3 +8,6 @@ Datos_de_Usuarios.migrado/
 # Archivos temporales de Word
 ~$*
 .claude/skills/
+
+# Notas privadas (no se suben)
+privado/

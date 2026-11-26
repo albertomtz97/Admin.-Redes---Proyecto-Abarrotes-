@@ -5,7 +5,6 @@
 # Carga la librería común y los módulos que existan, y muestra
 # el menú principal. Si un módulo todavía no existe, su opción
 # avisa "Módulo no disponible todavía" en lugar de fallar.
-# Spec: docs/specs/0001-sistema-abarrotes/0002-base.md
 # ==========================================================
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

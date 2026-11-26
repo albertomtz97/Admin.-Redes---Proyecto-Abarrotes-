@@ -6,7 +6,6 @@
 # Wireshark y migración del CSV viejo.
 # Se puede correr varias veces: lo que ya está hecho lo salta.
 # Uso: sudo ./instalar.sh
-# Spec: docs/specs/0001-sistema-abarrotes/0002-base.md
 # ==========================================================
 
 set -Eeuo pipefail
@@ -163,7 +162,7 @@ instalar_grupos_rol() {
         source "$BASE_DIR/modulos/gestion.sh"
     fi
     if ! declare -F gestion_crear_grupo >/dev/null; then
-        printf '  [pendiente]  se activa cuando el módulo Gestión (spec 0003) tenga gestion_crear_grupo\n'
+        printf '  [pendiente]  se activa cuando el módulo Gestión tenga gestion_crear_grupo\n'
         return 0
     fi
     for grupo in "${GRUPOS_ROL[@]}"; do
