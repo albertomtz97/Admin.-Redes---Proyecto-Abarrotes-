@@ -1,5 +1,11 @@
 # 0003. Gestión: usuarios y grupos
 
+> **Documento de consulta.** Es el diseño detallado e incluye funciones que **no son obligatorias**.
+> Lo que hay que entregar está en [requisitos](../../requisitos.md) y en tu instrucción de
+> [equipo/](../../../equipo/GUIA.md); si algo no coincide, mandan esos.
+>
+> **Cambio por el enunciado oficial (2026-11-25), manda sobre el texto de abajo:** Se agrega **Mostrar procesos**: por usuario activo (`who`, `ps -u`) y del sistema (`ps -ef`).
+
 ## Summary
 
 Administra las cuentas de la tienda con tres roles: comprador, proveedor y empleado. Cada rol es un

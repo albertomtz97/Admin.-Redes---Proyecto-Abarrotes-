@@ -1,36 +1,40 @@
 # Sistema de Administración — Tienda de Abarrotes
 
-Proyecto final de **Administración de Redes**. Menú en Bash para AlmaLinux que administra
-usuarios y grupos, tareas programadas (cron y at), respaldos y herramientas de seguridad.
+Proyecto de **Administración de Redes**: menú en Bash para AlmaLinux 9. **Tenemos 1 semana.**
 
-## Uso rápido
+## Qué lee cada quien
+
+1. [docs/requisitos.md](docs/requisitos.md): qué pide el proyecto (todos).
+2. [docs/guia-maquina-virtual.md](docs/guia-maquina-virtual.md): preparar tu VM (todos).
+3. [equipo/GUIA.md](equipo/GUIA.md): cómo trabajar y dónde encontrar cada cosa (todos).
+4. Tu archivo (tabla de abajo).
+
+Diseño detallado, solo de consulta: [docs/specs/](docs/specs/0001-sistema-abarrotes/index.md).
+
+
+| Persona | Módulo | Instrucción | Rama |
+|---|---|---|---|
+| Beto | Gestión | [beto-gestion.md](equipo/beto-gestion.md) | `beto/gestion` |
+| Diego | Respaldo | [diego-respaldo.md](equipo/diego-respaldo.md) | `diego/respaldo` |
+| Brian | Tareas | [brian-tareas.md](equipo/brian-tareas.md) | `brian/tareas` |
+| Gonzalo | Seguridad | [gonzalo-seguridad.md](equipo/gonzalo-seguridad.md) | `gonzalo/seguridad` |
+
+Erick: menú, instalador y unión de las partes.
+
+## Requisitos
+
+| Módulo | Obligatorio |
+|---|---|
+| Actividades de gestión | Usuarios y grupos: alta, baja, consulta. Procesos: por usuario activo y del sistema |
+| Automatización de tareas | cron y at: ejemplos y programar nuevas preguntando tarea y fecha |
+| Respaldo | tar + gzip, tar + bzip2, rsync; preguntar carpeta y destino |
+| Seguridad | Monitoreo: Nagios, Wireshark y nmap |
+
+Enunciado oficial y decisiones: [docs/requisitos.md](docs/requisitos.md).
+
+## Uso
 
 ```bash
-sudo ./instalar.sh   # una sola vez: instala dependencias y servicios
-sudo ./menu.sh       # abre el sistema
+sudo ./instalar.sh   # una vez
+sudo ./menu.sh
 ```
-
-## Documentación
-
-| Documento | Para qué |
-|---|---|
-| [docs/guia-maquina-virtual.md](docs/guia-maquina-virtual.md) | **Empieza aquí**: preparar tu VM de AlmaLinux, GitHub, Claude Code y flujo diario |
-| [docs/requisitos.md](docs/requisitos.md) | Lo que pidió el profesor, obligatorio y opcional |
-| [docs/specs/0001-sistema-abarrotes/index.md](docs/specs/0001-sistema-abarrotes/index.md) | Arquitectura, estructura, contrato entre módulos, comentarios, formato de datos |
-| [0002-base.md](docs/specs/0001-sistema-abarrotes/0002-base.md) | Menú, `lib/comunes.sh`, instalador, pruebas |
-| [0003-gestion.md](docs/specs/0001-sistema-abarrotes/0003-gestion.md) | Usuarios y grupos |
-| [0004-respaldo.md](docs/specs/0001-sistema-abarrotes/0004-respaldo.md) | tar gzip/bzip2, rsync, xfsdump |
-| [0005-tareas.md](docs/specs/0001-sistema-abarrotes/0005-tareas.md) | cron, at, pagos a distribuidores |
-| [0006-seguridad.md](docs/specs/0001-sistema-abarrotes/0006-seguridad.md) | Nagios, Wireshark, nmap |
-
-## Equipo
-
-Instrucciones simples por persona: [equipo/LEEME.md](equipo/LEEME.md).
-
-| Módulo | Responsable | Rama |
-|---|---|---|
-| 0002 Base + integración y pruebas | Erick | `dev` |
-| 0003 Gestión | Beto | `feature/gestion` |
-| 0004 Respaldo | Diego | `feature/respaldo` |
-| 0005 Tareas | Brian | `feature/tareas` |
-| 0006 Seguridad | Gonzalo | `feature/seguridad` |

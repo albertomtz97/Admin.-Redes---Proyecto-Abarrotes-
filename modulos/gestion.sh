@@ -3,9 +3,7 @@
 # modulos/gestion.sh
 # Módulo 1: usuarios y grupos de la tienda.
 # VERSIÓN DE TRANSICIÓN: es el código anterior adaptado lo mínimo
-# para funcionar con la nueva base. Se reescribe completo siguiendo
-# docs/specs/0001-sistema-abarrotes/0003-gestion.md
-# (prefijo gestion_, pantallas ui_*, roles, grupos, deshacer en fallas).
+# para funcionar con la nueva base. Se reescribe completo (ver equipo/beto-gestion.md).
 # Requiere: lib/comunes.sh cargado antes.
 # ==========================================================
 

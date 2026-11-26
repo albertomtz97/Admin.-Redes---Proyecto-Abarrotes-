@@ -1,80 +1,122 @@
-# Beto: módulo Gestión (usuarios y grupos)
+# Beto: Gestión (usuarios, grupos y procesos)
 
-Detalle técnico completo: `docs/specs/0001-sistema-abarrotes/0003-gestion.md`
+**Archivo:** `modulos/gestion.sh` · **Rama:** `beto/gestion`
+
+Antes lee [GUIA.md](GUIA.md): explica el proyecto, cómo preparar la VM y cómo subir tu trabajo.
+Requisitos del proyecto: [docs/requisitos.md](../docs/requisitos.md).
 
 ## Qué vas a construir
 
-Desde el menú se administran las cuentas de la tienda. Hay 3 roles y cada rol es un grupo de Linux
-con una carpeta compartida a la que solo entran sus miembros:
+La opción **Gestión** del menú. Con ella se administran las cuentas de Linux de las personas de la
+tienda y sus grupos, y se ven los procesos. Un **usuario** es una cuenta del sistema; un **grupo** es un conjunto de usuarios
+(sirve para dar permisos a todos de una vez).
 
-| Rol | Grupo | Datos que se piden |
+Cada usuario tiene un rol, y cada rol es un grupo:
+
+| Rol | Grupo | Qué datos pides además del nombre |
 |---|---|---|
-| comprador | `compradores` | teléfono, correo |
-| proveedor | `proveedores` | teléfono, correo, empresa, monto de pago semanal |
-| empleado | `empleados` | teléfono, correo |
+| comprador | `compradores` | nada más |
+| proveedor | `proveedores` | empresa y monto de pago semanal |
+| empleado | `empleados` | nada más |
 
-Ya existe un `modulos/gestion.sh` de transición (el código que hiciste antes, adaptado). **Lo vas a
-reescribir completo** usando la plantilla.
+Linux no guarda empresa ni monto, por eso además lo anotas en un CSV (archivo de texto donde cada
+línea es un registro y las columnas van separadas por comas).
 
-## Archivos que entregas (solo estos)
-
-- `modulos/gestion.sh`
-- `pruebas/probar_gestion.sh`
-
-## Menú
+Así se ve tu menú (puedes usar submenús o una sola lista):
 
 ```
 GESTIÓN
-├── Usuarios: agregar · eliminar · modificar datos · consultar · ver detalle
-└── Grupos:   agregar · eliminar · consultar · agregar usuario a grupo · quitar usuario de grupo
+├── Usuarios: agregar · borrar · consultar
+├── Grupos:   agregar · borrar · consultar
+└── Procesos: por usuario activo · del sistema
 ```
 
-## Lista de tareas
+Ya existe un `modulos/gestion.sh` con una versión anterior. **Reemplázalo completo**, partiendo de
+[plantilla_modulo.sh](plantilla_modulo.sh). El código viejo sirve para ver ideas, pero no usa las
+funciones `ui_*`.
 
-- [ ] **Agregar usuario**: pide nombre, rol, teléfono, correo (y empresa y monto si es proveedor) y la
-      contraseña dos veces (mínimo 8 caracteres, que coincidan). Pasos:
-      `useradd -m -G <grupo> -c <rol> <usuario>` → `echo "<usuario>:<pass>" | chpasswd` →
-      `chage -d 0 <usuario>` (obliga a cambiar la contraseña al entrar) → fila en `$CSV_USUARIOS`
-      → `registrar gestion "..."`.
-- [ ] **Si algo falla después de `useradd`**, borra el usuario (`userdel -r`) y no escribas en el CSV.
-- [ ] El CSV siempre tiene 6 columnas: `usuario,rol,telefono,correo,empresa,monto`
-      (`N/A` en empresa y monto si no es proveedor).
-- [ ] **Eliminar usuario**: solo usuarios que estén en el CSV, nunca `root` ni `$SUDO_USER`
-      (tu propia cuenta), pide confirmación. Si `userdel -r` falla, muestra el error y no toques el CSV.
-- [ ] **Modificar datos**: cambia teléfono y correo (y empresa y monto si es proveedor) con
-      `csv_actualizar`. El rol no se cambia.
-- [ ] **Consultar usuarios**: `ui_tabla_csv "$CSV_USUARIOS"`. **Ver detalle**: la fila del CSV,
-      `id`, `chage -l` y `lastlog -u`.
-- [ ] **`gestion_crear_grupo <grupo> <descripcion>`** (función muy importante: `instalar.sh` la usa
-      para crear los 3 grupos de rol). Crea el grupo, su fila en `$CSV_GRUPOS` y la carpeta
-      `$SRV_DIR/<grupo>` con dueño `root:<grupo>` y permisos `2770`. **Si algo ya existe, no falla**:
-      solo completa lo que falte.
-- [ ] **Eliminar grupo**: solo grupos de `$CSV_GRUPOS`; los 3 de rol **nunca** se borran; no borrar
-      un grupo que sea el grupo principal de alguien. La carpeta **no se borra**: se mueve a
-      `$SRV_DIR/_archivados/<grupo>_<fecha>`.
-- [ ] **Consultar grupos**: los grupos de la tienda con sus miembros; aparte, todos los grupos del
-      sistema o los grupos de un usuario.
-- [ ] **Agregar / quitar usuario de grupo**: `gpasswd -a` / `gpasswd -d`. No se puede quitar a
-      alguien del grupo de su propio rol.
+## Obligatorio, paso a paso
 
-## Cuidado con
+### 1. Agregar usuario
+1. Pide el nombre con `ui_pedir` y revísalo con `validar_usuario` (minúsculas, números, `_`, `-`).
+2. Si ya existe (`id "$usuario"` funciona), avisa con `ui_error` y termina.
+3. Pide el rol con `ui_menu`. Si es proveedor, pide empresa (`validar_campo`) y monto
+   (`validar_monto`). Pide todo **antes** de crear la cuenta.
+4. Asegura que el grupo del rol exista (usa tu función del punto 4).
+5. Crea la cuenta: `useradd -m -G <grupo> <usuario>` (`-m` crea su carpeta en `/home`,
+   `-G` lo mete al grupo).
+6. Ponle contraseña: `passwd <usuario>` (Linux la pide dos veces; tú no la guardas en ningún lado).
+7. Guarda la fila en `$CSV_USUARIOS`. Son **6 columnas en este orden**:
+   `usuario,rol,telefono,correo,empresa,monto`. Lo que no pidas va como `N/A`
+   (teléfono y correo puedes dejarlos en `N/A`).
 
-- Valida todo antes de crear nada: `validar_usuario`, `validar_telefono`, `validar_correo`,
-  `validar_monto`. Rechaza también un nombre de usuario que ya exista como grupo (`getent group`).
-- La contraseña nunca va a la bitácora, al CSV ni a la pantalla.
-- Usa `local` en todas las variables (el código viejo tenía un error: el correo de un proveedor se le
-  quedaba al siguiente usuario).
+   ```bash
+   csv_agregar "$CSV_USUARIOS" "$usuario" "$rol" "N/A" "N/A" "$empresa" "$monto"
+   ```
+   Brian lee `rol`, `empresa` y `monto` para pagar a los proveedores: si cambias el orden, le
+   rompes su parte.
+8. Anótalo: `registrar gestion "Usuario agregado: $usuario ($rol)"`.
 
-## Cómo probarlo a mano
+### 2. Borrar usuario
+Pide el nombre → revisa que se pueda borrar (ver "No olvides") → `ui_confirmar` →
+`userdel -r <usuario>` (`-r` borra también su carpeta) → solo si funcionó,
+`csv_quitar "$CSV_USUARIOS" 1 "$usuario"` y `registrar`.
 
-1. Crea un empleado y un proveedor. Revisa: `getent group empleados`, `ls -ld /srv/abarrotes/*`,
-   `chage -l <usuario>` y el CSV.
-2. Pon contraseñas distintas: no se debe crear nada.
-3. Intenta borrar `root` y tu propia cuenta: debe rechazarlo.
-4. Entra como el empleado (`su - <usuario>`): debe poder entrar a `/srv/abarrotes/empleados` y **no**
-   a `/srv/abarrotes/proveedores`. **Toma captura para el reporte.**
+### 3. Consultar usuarios
+`ui_tabla_csv "$CSV_USUARIOS"` muestra la tabla.
 
-## Pruebas automáticas (en `pruebas/probar_gestion.sh`)
+### 4. Agregar grupo
+Haz la función `gestion_crear_grupo <grupo> <descripcion>`. **No pregunta nada**: recibe los datos.
+Tu pantalla los pide y la llama. El nombre debe ser exacto porque `instalar.sh` la usa para crear
+los 3 grupos de rol.
 
-Prueba las funciones de lógica: validaciones, que no deje borrar `root`, que `gestion_crear_grupo`
-se pueda correr dos veces. Las que crean usuarios reales solo si `es_root` (con `sudo`).
+- Si el grupo no existe (`getent group "$grupo"` falla), créalo con `groupadd`.
+- Si no está en el CSV (`csv_existe "$CSV_GRUPOS" 1 "$grupo"` falla), agrega
+  `grupo,descripcion,fecha` (la fecha con `date +%F`).
+- Si ya existía todo, **debe terminar bien** (`return 0`), sin error ni filas repetidas.
+- No uses `ui_*` dentro de esta función.
+
+### 5. Borrar grupo
+Pide el nombre → revisa que esté en `$CSV_GRUPOS` → confirma → `groupdel <grupo>` → si funcionó,
+quítalo del CSV y `registrar`.
+
+### 6. Consultar grupos
+Muestra cada grupo de `$CSV_GRUPOS` con sus miembros. `getent group <grupo>` imprime
+`nombre:x:número:miembro1,miembro2`.
+
+### 7. Mostrar procesos
+Un **proceso** es un programa que se está ejecutando. Son dos opciones (solo consultan, no cambian
+nada):
+
+- **Por usuario activo:** primero muestra quién tiene sesión abierta (`who`), pide el nombre con
+  `ui_pedir`, revisa que exista (`id "$usuario"`) y muestra sus procesos:
+  `ps -u "$usuario" -o user,pid,%cpu,%mem,etime,cmd`.
+- **Del sistema:** todos los procesos con `ps -ef`.
+
+La lista es larga; para poder desplazarte, guárdala en un temporal y muéstrala (`q` para salir):
+
+```bash
+temporal=$(mktemp)
+ps -ef > "$temporal"
+ui_archivo "$temporal"
+rm -f "$temporal"
+```
+
+## No olvides (evita dañar tu sistema)
+
+- Solo borra usuarios y grupos que estén en tus CSV. Nunca `root` ni `$SUDO_USER` (tu cuenta).
+- No borres los 3 grupos de rol.
+- Pide confirmación antes de borrar.
+- Si `useradd`, `userdel`, `groupadd` o `groupdel` fallan, no cambies el CSV.
+
+## Terminaste cuando
+
+1. Creas un usuario de cada rol; aparecen en la tabla y en `getent group <grupo>`.
+2. Creas un grupo, lo consultas y lo borras.
+3. Borras un usuario: `id <usuario>` ya no lo encuentra y no está en el CSV.
+4. Intentar borrar `root` muestra un error y no pasa nada.
+5. `sudo ./instalar.sh` corre **dos veces** sin errores y existen los 3 grupos de rol.
+6. "Procesos por usuario activo" muestra los de tu usuario, y un nombre que no existe da error.
+7. "Procesos del sistema" muestra la lista completa y puedes volver al menú.
+
+Guarda capturas de cada opción para el reporte.

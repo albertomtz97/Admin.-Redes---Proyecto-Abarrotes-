@@ -1,77 +1,97 @@
-# Diego: módulo Respaldo
+# Diego: Respaldo
 
-Detalle técnico completo: `docs/specs/0001-sistema-abarrotes/0004-respaldo.md`
+**Archivo:** `modulos/respaldo.sh` · **Rama:** `diego/respaldo`
+
+Antes lee [GUIA.md](GUIA.md): explica el proyecto, cómo preparar la VM y cómo subir tu trabajo.
+Requisitos del proyecto: [docs/requisitos.md](../docs/requisitos.md).
 
 ## Qué vas a construir
 
-Respaldos de los datos de la tienda (`datos/`) y de la configuración (`/etc`) en `.tar.gz` (gzip) o
-`.tar.bz2` (bzip2), con historial, ver contenido, restaurar sin pisar archivos actuales, copia espejo
-con rsync y, como extra, respaldo de `/boot` con xfsdump.
+La opción **Respaldo de la información** del menú: copiar una carpeta a otro lugar. Tiene 3 opciones
+y **en las tres se pregunta qué carpeta respaldar y en qué ruta guardarla**.
 
-**Brian (Tareas) usa dos funciones tuyas**, así que su forma exacta no puede cambiar:
-
-```bash
-respaldo_crear <origen> <gz|bz2>     # imprime la ruta del archivo creado; regresa 1 si falla
-respaldo_eliminar <archivo>          # borra el archivo y marca la fila "eliminado"
-```
-
-Tu módulo se une **antes** que el de Brian.
-
-## Archivos que entregas (solo estos)
-
-- `modulos/respaldo.sh`
-- `pruebas/probar_respaldo.sh`
-
-## Menú
+**tar** junta muchos archivos en uno; **gzip** y **bzip2** lo comprimen (gzip suele ser más rápido y
+bzip2 suele dejarlo más pequeño). **rsync** no comprime: deja una copia igual de la carpeta y, si lo
+repites, solo copia lo que cambió.
 
 ```
 RESPALDO
-1 Crear respaldo gzip · 2 Crear respaldo bzip2 · 3 Historial · 4 Ver contenido
-5 Restaurar · 6 Eliminar respaldo · 7 Sincronizar con rsync
-8 Respaldar /boot con xfsdump · 9 Restaurar xfsdump
+├── 1. tar + gzip  (.tar.gz)    → carpeta y destino
+├── 2. tar + bzip2 (.tar.bz2)   → carpeta y destino
+└── 3. rsync                    → carpeta y destino
 ```
 
-## Lista de tareas
+(El profesor permite dump/restore en la opción 3; elegimos rsync. Ver
+[requisitos](../docs/requisitos.md).)
 
-- [ ] **`respaldo_crear <origen> <gz|bz2>`** (sin pantallas). Origen `datos` = `$DATOS_DIR`,
-      `etc` = `/etc`, o una ruta absoluta. Crea
-      `$RESPALDOS_DIR/<nombre>_<AAAAMMDD_HHMMSS>.tar.gz` (o `.tar.bz2`):
-      `tar -C "$(dirname <origen>)" --selinux --xattrs --acls -czf <archivo> "$(basename <origen>)"`
-      (`-cjf` para bzip2). Si el nombre ya existe, agrega `_2`, `_3`.
-- [ ] Usa `umask 077` al crear (el respaldo de `/etc` incluye contraseñas cifradas; solo root debe leerlo).
-- [ ] Código de salida de `tar`: 0 = bien, 1 = bien con aviso, 2 o más = falla (borra el archivo a medias).
-- [ ] Si salió bien: fila en `$CSV_RESPALDOS` → `fecha,archivo,origen,formato,tamano,activo`
-      (`archivo` = solo el nombre, `origen` = ruta completa, `tamano` = `du -h <archivo> | cut -f1`)
-      y `registrar respaldo "..."`.
-- [ ] **Historial**: `ui_tabla_csv "$CSV_RESPALDOS"`.
-- [ ] **Ver contenido**: `tar -tf` de un respaldo elegido (solo `gz` y `bz2` activos).
-- [ ] **Restaurar**: por defecto en `/tmp/restauracion_<fecha>`. En la ruta original solo con **dos**
-      confirmaciones. Si es la carpeta de datos, excluye `respaldos.csv` (`--exclude`).
-- [ ] **`respaldo_eliminar <archivo>`** (sin pantallas): acepta nombre o ruta (usa `basename`), borra el
-      archivo si existe y marca la fila `eliminado` aunque el archivo ya no estuviera. Regresa 1 solo si
-      no hay fila.
-- [ ] **rsync**: origen `respaldos/` o `datos/` (siempre con `/` al final), destino por defecto
-      `/var/respaldo_espejo` o lo que escriba (`usuario@host:/ruta` para otra máquina). Rechaza destinos que
-      empiecen con `-`. **Primero** muestra la simulación (`rsync -av --dry-run -- origen/ destino`),
-      luego confirma y ejecuta. `--delete` solo con una confirmación aparte.
-- [ ] **xfsdump**: revisa `findmnt -n -o FSTYPE /boot`. Si sale vacío o no es `xfs`, explica y no hagas
-      nada. Si es XFS: `xfsdump -l 0 -L abarrotes -M abarrotes -f $RESPALDOS_DIR/boot_<fecha>.xfsdump /boot`.
-- [ ] **xfsrestore**: solo en `/tmp/restauracion_<fecha>`, **nunca** sobre `/boot`.
+## Obligatorio, paso a paso
 
-## Cuidado con
+Parte de [plantilla_modulo.sh](plantilla_modulo.sh).
 
-- Nunca dejes un archivo de respaldo sin fila en el CSV, ni una fila `activo` sin archivo.
-- `respaldo_crear` no puede usar `ui_*` (Brian la llama desde cron, donde no hay pantalla).
+### 1. Preguntar carpeta y destino (sirve para las 3 opciones)
 
-## Cómo probarlo a mano
+```bash
+origen=$(ui_pedir "Carpeta a respaldar (ruta completa)" "$DATOS_DIR") || return 0
+destino=$(ui_pedir "Ruta donde guardar el respaldo" "$RESPALDOS_DIR") || return 0
+```
 
-1. Respalda `datos/` en gzip y en bzip2; compara los tamaños en el historial. **Captura para el reporte.**
-2. Restaura en `/tmp` y compara: `diff -r /tmp/restauracion_<fecha>/datos datos/`.
-3. Prueba rsync a `/var/respaldo_espejo` y verifica que primero muestre la simulación.
-4. Respalda `/boot` con xfsdump y restáuralo en `/tmp`.
+Antes de respaldar revisa, y si algo no se cumple usa `ui_error` y no hagas nada:
+- Las dos rutas empiezan con `/` y el origen es una carpeta que existe (`[[ -d "$origen" ]]`).
+- Normaliza: `origen=$(realpath "$origen")` y `destino=$(realpath -m "$destino")`.
+- El origen no es `/`.
+- El destino no es la carpeta de origen ni está dentro de ella (se copiaría a sí misma):
+  `[[ "$destino/" == "$origen/"* ]]` significa que está dentro.
+- Crea el destino si no existe: `mkdir -p "$destino"` (y revisa que haya funcionado).
 
-## Pruebas automáticas (en `pruebas/probar_respaldo.sh`)
+### 2. tar + gzip
 
-Crea una carpeta de prueba con un par de archivos, respáldala en gz y bz2, revisa que haya filas en
-el CSV, restaura en otra carpeta temporal y compara. Que `respaldo_crear /no/existe gz` falle sin crear
-nada.
+```bash
+archivo="$destino/$(basename "$origen")_$(date '+%Y%m%d_%H%M%S').tar.gz"
+( umask 077; tar -czf "$archivo" -C "$(dirname "$origen")" "$(basename "$origen")" )
+```
+
+- `-c` crear, `-z` comprimir con gzip, `-f` nombre del archivo.
+- `-C` hace que dentro del respaldo quede solo la carpeta y no toda la ruta.
+- `umask 077` hace que solo root pueda leer el archivo (puede traer datos sensibles, como `/etc`).
+  Va entre paréntesis para que no afecte al resto del menú.
+- La fecha en el nombre evita pisar respaldos anteriores.
+
+Si `tar` falla: `ui_error` y borra el archivo incompleto (`rm -f "$archivo"`). Si funciona: muestra el
+archivo y su tamaño (`ui_comando ls -lh "$archivo"`) y usa `registrar respaldo "..."`.
+
+### 3. tar + bzip2
+Igual, cambiando `-czf` por `-cjf` y `.tar.gz` por `.tar.bz2`.
+
+### 4. rsync
+
+```bash
+ui_comando rsync -av -- "$origen/" "$destino/"
+```
+
+- `-a` conserva permisos y fechas, `-v` muestra lo que copia.
+- La `/` al final del origen copia **el contenido** de la carpeta.
+- `--` evita que una ruta se tome como opción. **No uses `--delete`** (borra archivos del destino).
+- Si falla, `ui_error`; si funciona, `registrar respaldo "..."`.
+
+## Extra (solo si sobra tiempo)
+
+- **Ver y restaurar:** `tar -tf <archivo>` lista el contenido.
+  `mkdir -p /tmp/restauracion && tar -xf <archivo> -C /tmp/restauracion` lo extrae.
+
+## No olvides
+
+- Restaura solo en `/tmp`, nunca encima de los originales.
+- Para probar usa carpetas pequeñas (`$DATOS_DIR` o `/etc`).
+- No subas respaldos a git.
+
+## Terminaste cuando
+
+1. Cada opción pregunta carpeta y destino, y el resultado queda **en la ruta que escribiste**
+   (pruébalo con `/tmp/mis_respaldos`).
+2. `sudo ls -lh /tmp/mis_respaldos` muestra el `.tar.gz` y el `.tar.bz2` (compara tamaños).
+3. `sudo tar -tf <archivo>` lista los archivos respaldados.
+4. rsync deja la copia en el destino; si agregas un archivo y repites, solo copia ese cambio.
+5. Una carpeta que no existe, o un destino dentro del origen, muestra error.
+6. La bitácora del menú muestra tus registros.
+
+Guarda capturas de cada opción para el reporte.

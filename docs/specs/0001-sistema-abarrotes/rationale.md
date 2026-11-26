@@ -1,5 +1,9 @@
 # 0001. Razonamiento: sistema de administración para la tienda de abarrotes
 
+> **Documento de consulta.** Es el diseño detallado e incluye funciones que **no son obligatorias**.
+> Lo que hay que entregar está en [requisitos](../../requisitos.md) y en tu instrucción de
+> [equipo/](../../../equipo/GUIA.md); si algo no coincide, mandan esos.
+
 ## Context
 
 > ⚠️ Premise note: el tema abarca 5 decisiones que se construyen por separado (base y 4 módulos).

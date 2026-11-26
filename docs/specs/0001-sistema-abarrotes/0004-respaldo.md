@@ -1,5 +1,11 @@
 # 0004. Respaldo: tar gzip, tar bzip2, rsync y xfsdump
 
+> **Documento de consulta.** Es el diseño detallado e incluye funciones que **no son obligatorias**.
+> Lo que hay que entregar está en [requisitos](../../requisitos.md) y en tu instrucción de
+> [equipo/](../../../equipo/GUIA.md); si algo no coincide, mandan esos.
+>
+> **Cambio por el enunciado oficial (2026-11-25), manda sobre el texto de abajo:** gzip, bzip2 y rsync **preguntan carpeta de origen y ruta de destino** (no solo `datos/` o `/etc`, ni destino fijo). rsync es obligatorio. **xfsdump/xfsrestore (AC-9 y AC-10) ya no se hacen.**
+
 ## Summary
 
 Respalda los datos de la tienda (`datos/`) y la configuración (`/etc`) en archivos `.tar.gz` o
@@ -19,10 +25,10 @@ clásico no sirve en XFS, que es lo que usa AlmaLinux).
 
 **Acceptance criteria**:
 - **AC-1**: Crear respaldo deja elegir origen (`datos/` o `/etc`) y genera `respaldos/<nombre>_<AAAAMMDD_HHMMSS>.tar.gz` (gzip) o `.tar.bz2` (bzip2), con rutas relativas (`tar -C "$(dirname <origen>)"`) y conservando permisos de SELinux (`--selinux --xattrs --acls`). Si el nombre ya existe (dos respaldos en el mismo segundo), agrega `_2`, `_3`.
-- **AC-2**: Cada respaldo exitoso agrega `fecha,archivo,origen,formato,tamano,activo` a `respaldos.csv` (`archivo` = solo el nombre, `origen` = ruta absoluta, `tamano` = `du -h | cut -f1`) y muestra el tamaño. Los respaldos se crean con `umask 077` (solo root los puede leer, porque `/etc` incluye `/etc/shadow`).
+- **AC-2**: Cada respaldo exitoso agrega `fecha,archivo,origen,formato,tamano,estado` (con `estado` = `activo`) a `respaldos.csv` (`archivo` = solo el nombre, `origen` = ruta absoluta, `tamano` = `du -h | cut -f1`) y muestra el tamaño. Los respaldos se crean con `umask 077` (solo root los puede leer, porque `/etc` incluye `/etc/shadow`).
 - **AC-3**: `respaldo_crear <origen> <gz|bz2>` funciona sin pantallas: imprime la ruta creada y regresa 0; con origen inexistente o formato inválido regresa 1 sin crear archivo ni fila. Código de tar 1 cuenta como éxito con aviso en bitácora; 2 o más es falla y borra el archivo parcial. Registra en bitácora con módulo `respaldo` (los scripts de Tareas no vuelven a registrar el éxito).
 - **AC-4**: Historial muestra `respaldos.csv` en tabla.
-- **AC-5**: Ver contenido lista los archivos de un respaldo tar elegido (`tar -tf`); la lista solo ofrece respaldos `activo` con formato `gz` o `bz2`.
+- **AC-5**: Ver contenido lista los archivos de un respaldo tar elegido (`tar -tf`); la lista solo ofrece respaldos con `estado` = `activo` y con formato `gz` o `bz2`.
 - **AC-6**: Restaurar (solo tar) extrae en `/tmp/restauracion_<AAAAMMDD_HHMMSS>` por defecto; restaurar en la ruta original solo después de dos confirmaciones, en `dirname` de la columna `origen`, con `--selinux --xattrs --acls`. Si el origen es la carpeta de datos, se excluye `respaldos.csv` al restaurar (`--exclude`) para no desfasar el historial.
 - **AC-7**: Eliminar respaldo pide confirmación y llama a `respaldo_eliminar <archivo>` (sin pantallas, la usa también la limpieza de Tareas): acepta nombre o ruta, borra el archivo si existe y marca la fila `eliminado` aunque el archivo ya no estuviera; regresa 1 solo si no hay fila.
 - **AC-8**: rsync deja elegir origen (`respaldos/` o `datos/`, siempre con `/` final) y destino (por defecto `/var/respaldo_espejo`, o una ruta local, o `usuario@host:/ruta`); rechaza destinos que empiecen con `-` o que estén dentro del origen; usa `--` antes de las rutas. Primero muestra la simulación (`rsync -av --dry-run`), luego pide confirmar y ejecuta `rsync -av`. `--delete` solo con confirmación aparte.
@@ -58,7 +64,7 @@ ruta absoluta existente (lo usan las pruebas con una carpeta temporal).
 | xfsdump | etiquetas | fijas: `-L abarrotes -M abarrotes` |
 
 **Key invariants**:
-- Nunca queda un archivo de respaldo sin fila, ni una fila `activo` sin archivo.
+- Nunca queda un archivo de respaldo sin fila, ni una fila con `estado` = `activo` sin archivo.
 - `respaldos/` tiene permisos `700` y cada respaldo `600`.
 - Restaurar nunca sobrescribe sin doble confirmación; xfsrestore nunca toca `/boot`.
 
