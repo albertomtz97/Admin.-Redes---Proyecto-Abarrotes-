@@ -1,0 +1,6 @@
+# Fin de línea LF siempre (el repo también se usa desde Windows;
+# con CRLF bash falla y cron ignora los archivos)
+* text=auto eol=lf
+*.docx binary
+*.png binary
+*.jpg binary

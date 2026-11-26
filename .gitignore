@@ -1,0 +1,10 @@
+# Datos de cada máquina (no se comparten)
+datos/
+respaldos/
+logs/
+Datos_de_Usuarios/
+Datos_de_Usuarios.migrado/
+
+# Archivos temporales de Word
+~$*
+.claude/skills/
