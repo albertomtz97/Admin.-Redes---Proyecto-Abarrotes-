@@ -6,7 +6,7 @@ usuarios y grupos, tareas programadas (cron y at), respaldos y herramientas de s
 ## Uso rápido
 
 ```bash
-sudo ./instalar.sh   # una sola vez: instala dependencias y servicios
+sudo ./instalar.sh   # instala dependencias y servicios; puedes correrlo las veces que haga falta (no borra datos)
 sudo ./menu.sh       # abre el sistema
 ```
 
@@ -29,8 +29,8 @@ Instrucciones simples por persona: [equipo/LEEME.md](equipo/LEEME.md).
 
 | Módulo | Responsable | Rama |
 |---|---|---|
-| 0002 Base + integración y pruebas | Erick | `dev` |
-| 0003 Gestión | Beto | `feature/gestion` |
-| 0004 Respaldo | Diego | `feature/respaldo` |
-| 0005 Tareas | Brian | `feature/tareas` |
-| 0006 Seguridad | Gonzalo | `feature/seguridad` |
+| 0002 Base + integración y pruebas | Erick | `erick/base` |
+| 0003 Gestión | Beto | `beto/gestion` |
+| 0004 Respaldo | Diego | `diego/respaldo` |
+| 0005 Tareas | Brian | `brian/tareas` |
+| 0006 Seguridad | Gonzalo | `gonzalo/seguridad` |

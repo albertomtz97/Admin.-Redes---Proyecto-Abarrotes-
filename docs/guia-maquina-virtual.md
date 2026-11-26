@@ -151,7 +151,7 @@ el repositorio. Empieza con algo como:
 ```bash
 cd ~/proyecto
 git switch dev && git pull                 # traer lo último del equipo
-git switch feature/<tu-modulo>             # o crearla la primera vez: git switch -c feature/<tu-modulo>
+git switch <tu-nombre>/<tu-modulo>         # o crearla la 1a vez: git switch -c <tu-nombre>/<tu-modulo>
 git merge dev                              # meter a tu rama lo nuevo de dev
 
 # ... programar y probar ...
@@ -160,7 +160,7 @@ bash -n modulos/<tu-modulo>.sh
 
 git add <tus archivos>
 git commit -m "respaldo: crear respaldo gzip y bzip2"
-git push -u origin feature/<tu-modulo>
+git push -u origin <tu-nombre>/<tu-modulo>
 gh pr create --base dev                    # abre el pull request hacia dev
 ```
 
@@ -170,7 +170,7 @@ Reglas del equipo (detalle en el spec 0001):
   responsable de la Base; si necesitas algo ahí, se lo pides.
 - No subas `datos/`, `logs/` ni `respaldos/` (ya están en `.gitignore`).
 - Antes del pull request, las pruebas tienen que pasar.
-- Otro integrante revisa y aprueba el pull request antes de unirlo a `dev`.
+- Erick revisa el pull request y lo une a `dev`.
 
 ## 9. Problemas comunes
 
