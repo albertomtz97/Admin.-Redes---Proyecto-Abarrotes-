@@ -87,9 +87,9 @@ base_principal() {
 
     while true; do
         opcion=$(UI_TEXTO_CERO="Salir" ui_menu "ADMINISTRACIÓN · TIENDA DE ABARROTES" \
-            gestion "Gestión (usuarios y grupos)" \
-            tareas "Tareas (cron y at)" \
-            respaldo "Respaldo (tar gzip / bzip2, rsync)" \
+            gestion "Actividades de gestión (usuarios, grupos, procesos)" \
+            tareas "Automatización de tareas (cron y at)" \
+            respaldo "Respaldo de la información (tar gzip / bzip2, rsync)" \
             seguridad "Seguridad (Nagios, Wireshark, nmap)" \
             bitacora "Ver bitácora") || break
         case "$opcion" in

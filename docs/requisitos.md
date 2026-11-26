@@ -50,11 +50,6 @@ Plataforma: **AlmaLinux**.
 - Que nmap cuenta como monitoreo en tiempo real (se ve su avance en la terminal). Si no, la opción es
   **iftop** y hay que agregarlo a `instalar.sh`.
 
-## Pendiente de Erick (código de la base)
-
-- En `menu.sh`: nombrar las opciones "Actividades de gestión (usuarios, grupos, procesos)" y
-  "Automatización de tareas (cron y at)".
-
 ## Cómo leer la documentación
 
 1. Este archivo: **qué pide el proyecto**.
