@@ -144,13 +144,15 @@ menu_grupos() {
         echo "1) Alta de grupo"
         echo "2) Baja de grupo"
         echo "3) Consultar grupos"
-        echo "4) Volver"
+	echo "4) Administracion de miembros"
+        echo "5) Volver"
         read -rp "Opción: " op
         case $op in
             1) alta_grupo ;;
             2) baja_grupo ;;
             3) consultar_grupos ;;
-            4) return ;;
+	    4) administracion_de_miembros;;
+            5) return ;;
             *) echo "Inválida"; pausa ;;
         esac
     done
@@ -197,7 +199,74 @@ baja_grupo() {
         }
     fi
     pausa
+
 }
+
+administracion_de_miembros() {
+    while true; do
+        clear
+        echo "--- ADMINISTRAR MIEMBROS ---"
+        echo "1) Agregar usuario a un grupo"
+        echo "2) Quitar usuario de un grupo"
+        echo "3) Volver"
+        read -rp "Opción: " op
+        case $op in
+            1) agregar_a_grupo ;;
+            2) quitar_de_grupo ;;
+            3) return ;;
+            *) echo "Inválida"; pausa ;;
+        esac
+    done
+}
+
+agregar_a_grupo() {
+    clear
+    listar_usuarios_tabla
+    echo
+    read -rp "Usuario: " u
+    if ! id "$u" &>/dev/null || [ "$(id -u "$u")" -lt 1000 ]; then
+        echo "Usuario inválido."; pausa; return
+    fi
+    echo
+    listar_grupos_tabla
+    echo
+    read -rp "Grupo al que agregarlo: " g
+    gid=$(getent group "$g" | cut -d: -f3)
+    if [ -z "$gid" ] || [ "$gid" -lt 1000 ]; then
+        echo "Grupo inválido."; pausa; return
+    fi
+    usermod -aG "$g" "$u" && {
+        registrar "Usuario $u agregado al grupo $g"
+        echo "$u ahora pertenece a: $(id -nG "$u")"
+    }
+    pausa
+}
+
+quitar_de_grupo() {
+    clear
+    listar_usuarios_tabla
+    echo
+    read -rp "Usuario: " u
+    if ! id "$u" &>/dev/null || [ "$(id -u "$u")" -lt 1000 ]; then
+        echo "Usuario inválido."; pausa; return
+    fi
+    echo "Grupos actuales de $u: $(id -nG "$u")"
+    read -rp "Grupo del que quitarlo: " g
+    if [ "$g" = "$(id -gn "$u")" ]; then
+        echo "Ese es su grupo principal; no se quita."; pausa; return
+    fi
+    if ! id -nG "$u" | tr ' ' '\n' | grep -qx "$g"; then
+        echo "El usuario no pertenece a ese grupo."; pausa; return
+    fi
+    gpasswd -d "$u" "$g" && {
+        registrar "Usuario $u quitado del grupo $g"
+        echo "$u ahora pertenece a: $(id -nG "$u")"
+    }
+    pausa
+}
+
+
+
 
 # Muestra grupos normales (GID >= 1000) en tabla
 listar_grupos_tabla() {
